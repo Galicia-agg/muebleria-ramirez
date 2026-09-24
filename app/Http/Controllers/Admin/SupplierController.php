@@ -18,18 +18,32 @@ class SupplierController extends Controller
         ]);
     }
 
+    public function create(): Response
+    {
+        return Inertia::render('Admin/Suppliers/Form', [
+            'supplier' => null,
+        ]);
+    }
+
     public function store(StoreSupplierRequest $request): RedirectResponse
     {
         Supplier::query()->create($request->validated());
 
-        return back()->with('success', 'Proveedor creado correctamente.');
+        return redirect()->route('admin.suppliers.index')->with('success', 'Proveedor creado correctamente.');
+    }
+
+    public function edit(Supplier $supplier): Response
+    {
+        return Inertia::render('Admin/Suppliers/Form', [
+            'supplier' => $supplier,
+        ]);
     }
 
     public function update(StoreSupplierRequest $request, Supplier $supplier): RedirectResponse
     {
         $supplier->update($request->validated());
 
-        return back()->with('success', 'Proveedor actualizado correctamente.');
+        return redirect()->route('admin.suppliers.index')->with('success', 'Proveedor actualizado correctamente.');
     }
 
     public function destroy(Supplier $supplier): RedirectResponse

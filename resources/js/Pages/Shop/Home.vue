@@ -59,8 +59,8 @@ function goToCatalog() {
 
         <section class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
             <div class="mb-6 flex flex-wrap items-center gap-3">
-                <InputText v-model="search" placeholder="Buscar productos..." class="w-64" @keyup.enter="goToCatalog" />
-                <Select v-model="sort" :options="sortOptions" optionLabel="label" optionValue="value" placeholder="Ordenar" @change="goToCatalog" />
+                <InputText v-model="search" placeholder="Buscar productos..." class="w-full sm:w-64" @keyup.enter="goToCatalog" />
+                <Select v-model="sort" :options="sortOptions" optionLabel="label" optionValue="value" placeholder="Ordenar" class="flex-1 sm:flex-none" @change="goToCatalog" />
                 <Button label="Buscar" size="small" @click="goToCatalog" />
             </div>
 
@@ -93,29 +93,40 @@ function goToCatalog() {
 
                 <div class="lg:col-span-3">
                     <h2 class="mb-4 text-lg font-semibold text-primary-900">Destacados</h2>
-                    <div class="grid grid-cols-2 gap-6 sm:grid-cols-3">
+                    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-6">
                         <div
                             v-for="product in featuredProducts"
                             :key="product.id"
-                            class="overflow-hidden rounded-lg border border-primary-100 bg-white"
+                            class="group overflow-hidden rounded-xl border border-primary-100 bg-white transition hover:shadow-md"
                         >
-                            <Link :href="route('catalog.show', product.slug)">
+                            <Link :href="route('catalog.show', product.slug)" class="relative block aspect-square overflow-hidden bg-primary-50">
                                 <img
                                     v-if="product.images?.[0]"
                                     :src="product.images[0].url"
                                     :alt="product.name"
-                                    class="h-40 w-full object-cover"
+                                    class="h-full w-full object-cover transition duration-200 group-hover:scale-105"
                                 />
-                                <div v-else class="flex h-40 w-full items-center justify-center bg-primary-50 text-stone-400">
+                                <div v-else class="flex h-full w-full items-center justify-center text-stone-400">
                                     Sin imagen
                                 </div>
+                                <span
+                                    v-if="product.compare_at_price"
+                                    class="absolute left-2 top-2 rounded-full bg-accent-600 px-2 py-0.5 text-xs font-bold text-white"
+                                >
+                                    -{{ Math.round((1 - product.price / product.compare_at_price) * 100) }}%
+                                </span>
                             </Link>
-                            <div class="p-3">
-                                <Link :href="route('catalog.show', product.slug)" class="text-sm font-medium text-stone-800 hover:text-accent-700">
+                            <div class="p-2.5 sm:p-3">
+                                <Link :href="route('catalog.show', product.slug)" class="line-clamp-2 text-sm font-medium text-stone-800 hover:text-accent-700">
                                     {{ product.name }}
                                 </Link>
-                                <p class="mt-1 text-sm font-semibold text-accent-700">Q {{ product.price }}</p>
-                                <Button label="Agregar" size="small" class="mt-2 w-full" @click="quickAdd(product)" />
+                                <div class="mt-1 flex items-baseline gap-1.5">
+                                    <p class="text-sm font-bold text-accent-700 sm:text-base">Q {{ product.price }}</p>
+                                    <p v-if="product.compare_at_price" class="text-xs text-stone-400 line-through">
+                                        Q {{ product.compare_at_price }}
+                                    </p>
+                                </div>
+                                <Button label="Agregar" size="small" class="mt-2 w-full !text-xs sm:!text-sm" @click="quickAdd(product)" />
                             </div>
                         </div>
 

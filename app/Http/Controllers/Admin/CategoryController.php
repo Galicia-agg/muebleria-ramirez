@@ -15,13 +15,20 @@ class CategoryController extends Controller
 {
     public function __construct(
         private readonly CategoryRepositoryInterface $categories,
-    ) {
-    }
+    ) {}
 
     public function index(): Response
     {
         return Inertia::render('Admin/Categories/Index', [
             'categories' => $this->categories->all(),
+        ]);
+    }
+
+    public function create(): Response
+    {
+        return Inertia::render('Admin/Categories/Form', [
+            'categories' => $this->categories->all(),
+            'category' => null,
         ]);
     }
 
@@ -32,7 +39,15 @@ class CategoryController extends Controller
 
         $this->categories->create($data);
 
-        return back()->with('success', 'Categoría creada correctamente.');
+        return redirect()->route('admin.categories.index')->with('success', 'Categoría creada correctamente.');
+    }
+
+    public function edit(Category $category): Response
+    {
+        return Inertia::render('Admin/Categories/Form', [
+            'categories' => $this->categories->all(),
+            'category' => $category,
+        ]);
     }
 
     public function update(StoreCategoryRequest $request, Category $category): RedirectResponse
@@ -48,7 +63,7 @@ class CategoryController extends Controller
 
         $this->categories->update($category, $data);
 
-        return back()->with('success', 'Categoría actualizada correctamente.');
+        return redirect()->route('admin.categories.index')->with('success', 'Categoría actualizada correctamente.');
     }
 
     public function destroy(Category $category): RedirectResponse

@@ -4,7 +4,7 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import Checkbox from '@/Components/Checkbox.vue';
-import { router, useForm } from '@inertiajs/vue3';
+import { Link, router, useForm } from '@inertiajs/vue3';
 import Button from 'primevue/button';
 import { computed, ref } from 'vue';
 
@@ -78,7 +78,15 @@ function submit() {
             </h1>
         </template>
 
-        <div class="max-w-3xl rounded-lg border border-stone-200 bg-white p-6">
+        <div class="max-w-3xl">
+            <Link
+                :href="route('admin.products.index')"
+                class="mb-3 inline-flex items-center gap-1.5 text-sm font-medium text-stone-500 hover:text-primary-700"
+            >
+                <i class="pi pi-arrow-left text-xs" /> Volver a productos
+            </Link>
+
+            <div class="rounded-lg border border-stone-200 bg-white p-6">
             <form @submit.prevent="submit" class="space-y-6">
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
@@ -207,8 +215,14 @@ function submit() {
                     <InputError :message="form.errors.images" class="mt-2" />
                 </div>
 
-                <Button type="submit" label="Guardar" :disabled="form.processing" />
+                <div class="flex gap-3">
+                    <Button type="submit" label="Guardar" :loading="form.processing" />
+                    <Link :href="route('admin.products.index')" class="inline-flex items-center text-sm text-stone-500 hover:text-stone-700">
+                        Cancelar
+                    </Link>
+                </div>
             </form>
+            </div>
         </div>
     </AdminLayout>
 </template>

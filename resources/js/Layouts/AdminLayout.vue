@@ -84,42 +84,50 @@ const logout = () => {
         </aside>
 
         <div class="min-w-0 flex-1">
-            <header class="flex items-center justify-between gap-4 border-b border-stone-200 bg-white px-4 py-4 sm:px-6">
-                <div class="flex min-w-0 items-center gap-3">
-                    <button type="button" class="text-stone-500 hover:text-stone-800 lg:hidden" @click="sidebarOpen = true">
-                        <i class="pi pi-bars text-lg" />
-                    </button>
-                    <div class="min-w-0">
-                        <slot name="header" />
+            <header class="sticky top-0 z-20 border-b border-stone-200 bg-white/95 px-4 py-4 backdrop-blur sm:px-6">
+                <div class="flex items-center justify-between gap-4">
+                    <div class="flex min-w-0 items-center gap-3">
+                        <button type="button" class="text-stone-500 hover:text-stone-800 lg:hidden" @click="sidebarOpen = true">
+                            <i class="pi pi-bars text-lg" />
+                        </button>
+                        <div class="min-w-0">
+                            <slot name="header" />
+                        </div>
+                    </div>
+
+                    <div class="flex shrink-0 items-center gap-2 sm:gap-4">
+                        <div v-if="slots.actions" class="hidden sm:block">
+                            <slot name="actions" />
+                        </div>
+
+                        <div v-if="slots.actions" class="hidden h-6 w-px bg-stone-200 sm:block" />
+
+                        <Dropdown align="right" width="48">
+                            <template #trigger>
+                                <button type="button" class="flex items-center gap-2 text-sm font-medium text-stone-600 hover:text-stone-900">
+                                    <span class="hidden sm:inline">{{ user.name }}</span>
+                                    <i class="pi pi-user inline sm:hidden" />
+                                    <i class="pi pi-chevron-down text-xs" />
+                                </button>
+                            </template>
+
+                            <template #content>
+                                <DropdownLink :href="route('profile.show')">
+                                    Perfil
+                                </DropdownLink>
+
+                                <form @submit.prevent="logout">
+                                    <DropdownLink as="button">
+                                        Cerrar sesión
+                                    </DropdownLink>
+                                </form>
+                            </template>
+                        </Dropdown>
                     </div>
                 </div>
 
-                <div class="flex shrink-0 items-center gap-2 sm:gap-4">
+                <div v-if="slots.actions" class="mt-3 [&>a]:block [&_button]:w-full sm:hidden">
                     <slot name="actions" />
-
-                    <div v-if="slots.actions" class="hidden h-6 w-px bg-stone-200 sm:block" />
-
-                    <Dropdown align="right" width="48">
-                        <template #trigger>
-                            <button type="button" class="flex items-center gap-2 text-sm font-medium text-stone-600 hover:text-stone-900">
-                                <span class="hidden sm:inline">{{ user.name }}</span>
-                                <i class="pi pi-user inline sm:hidden" />
-                                <i class="pi pi-chevron-down text-xs" />
-                            </button>
-                        </template>
-
-                        <template #content>
-                            <DropdownLink :href="route('profile.show')">
-                                Perfil
-                            </DropdownLink>
-
-                            <form @submit.prevent="logout">
-                                <DropdownLink as="button">
-                                    Cerrar sesión
-                                </DropdownLink>
-                            </form>
-                        </template>
-                    </Dropdown>
                 </div>
             </header>
 

@@ -17,7 +17,6 @@ use App\Models\Order;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/catalogo', [CatalogController::class, 'index'])->name('catalog.index');
@@ -68,7 +67,7 @@ Route::middleware([
         })->name('dashboard');
 
         Route::resource('categories', AdminCategoryController::class)
-            ->only(['index', 'store', 'update', 'destroy']);
+            ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
 
         Route::resource('products', AdminProductController::class)
             ->except(['show']);
@@ -86,10 +85,10 @@ Route::middleware([
         Route::post('/payments/{payment}/reject', [AdminPaymentController::class, 'reject'])->name('payments.reject');
 
         Route::resource('users', AdminUserController::class)
-            ->only(['index', 'store', 'update', 'destroy']);
+            ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
 
         Route::resource('suppliers', AdminSupplierController::class)
-            ->only(['index', 'store', 'update', 'destroy']);
+            ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
 
         Route::resource('stock-entries', AdminStockEntryController::class)
             ->only(['index', 'create', 'store']);

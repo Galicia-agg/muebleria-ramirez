@@ -1,52 +1,11 @@
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import TextInput from '@/Components/TextInput.vue';
-import Checkbox from '@/Components/Checkbox.vue';
-import { router, useForm } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import Button from 'primevue/button';
-import { ref } from 'vue';
 
 const props = defineProps({
     suppliers: Array,
 });
-
-const editingId = ref(null);
-
-const form = useForm({
-    name: '',
-    contact_name: '',
-    phone: '',
-    email: '',
-    address: '',
-    notes: '',
-    active: true,
-});
-
-function submit() {
-    if (editingId.value) {
-        form.put(route('admin.suppliers.update', editingId.value), { onSuccess: () => cancelEdit() });
-    } else {
-        form.post(route('admin.suppliers.store'), { onSuccess: () => form.reset() });
-    }
-}
-
-function edit(supplier) {
-    editingId.value = supplier.id;
-    form.name = supplier.name;
-    form.contact_name = supplier.contact_name ?? '';
-    form.phone = supplier.phone ?? '';
-    form.email = supplier.email ?? '';
-    form.address = supplier.address ?? '';
-    form.notes = supplier.notes ?? '';
-    form.active = supplier.active;
-}
-
-function cancelEdit() {
-    editingId.value = null;
-    form.reset();
-}
 
 function destroy(supplier) {
     if (confirm(`¿Eliminar al proveedor "${supplier.name}"?`)) {
@@ -61,8 +20,39 @@ function destroy(supplier) {
             <h1 class="text-lg font-semibold text-stone-900">Proveedores</h1>
         </template>
 
-        <div class="grid gap-6 md:grid-cols-3">
-            <div class="overflow-hidden rounded-lg border border-stone-200 bg-white md:col-span-2">
+        <template #actions>
+            <Link :href="route('admin.suppliers.create')">
+                <Button label="Nuevo proveedor" icon="pi pi-plus" />
+            </Link>
+        </template>
+
+        <p v-if="suppliers.length === 0" class="rounded-lg border border-stone-200 bg-white p-10 text-center text-stone-500">
+            No hay proveedores.
+        </p>
+
+        <template v-else>
+            <!-- Mobile: stacked cards -->
+            <ul class="space-y-3 sm:hidden">
+                <li v-for="supplier in suppliers" :key="supplier.id" class="rounded-lg border border-stone-200 bg-white p-4">
+                    <div class="flex items-center justify-between">
+                        <span class="font-medium text-stone-900">{{ supplier.name }}</span>
+                        <span
+                            class="rounded-full px-2 py-0.5 text-xs"
+                            :class="supplier.active ? 'bg-green-100 text-green-700' : 'bg-stone-100 text-stone-500'"
+                        >
+                            {{ supplier.active ? 'Activo' : 'Inactivo' }}
+                        </span>
+                    </div>
+                    <p class="mt-1 text-sm text-stone-500">{{ supplier.contact_name || '—' }} · {{ supplier.phone || '—' }}</p>
+                    <div class="mt-3 flex gap-4 border-t border-stone-100 pt-3 text-sm">
+                        <Link :href="route('admin.suppliers.edit', supplier.id)" class="font-medium text-primary-600">Editar</Link>
+                        <button class="font-medium text-red-600" @click="destroy(supplier)">Eliminar</button>
+                    </div>
+                </li>
+            </ul>
+
+            <!-- Desktop: table -->
+            <div class="hidden overflow-hidden rounded-lg border border-stone-200 bg-white sm:block">
               <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-stone-200">
                     <thead class="bg-stone-50">
@@ -88,59 +78,14 @@ function destroy(supplier) {
                                 </span>
                             </td>
                             <td class="px-6 py-3 text-right">
-                                <button class="mr-3 font-medium text-primary-600 hover:text-primary-800" @click="edit(supplier)">Editar</button>
+                                <Link :href="route('admin.suppliers.edit', supplier.id)" class="mr-3 font-medium text-primary-600 hover:text-primary-800">Editar</Link>
                                 <button class="font-medium text-red-600 hover:text-red-800" @click="destroy(supplier)">Eliminar</button>
                             </td>
-                        </tr>
-                        <tr v-if="suppliers.length === 0">
-                            <td colspan="5" class="px-6 py-10 text-center text-stone-500">No hay proveedores.</td>
                         </tr>
                     </tbody>
                 </table>
               </div>
             </div>
-
-            <div class="rounded-lg border border-stone-200 bg-white p-6">
-                <h3 class="mb-4 text-sm font-semibold text-stone-900">
-                    {{ editingId ? 'Editar proveedor' : 'Nuevo proveedor' }}
-                </h3>
-                <form @submit.prevent="submit" class="space-y-4">
-                    <div>
-                        <InputLabel value="Nombre" />
-                        <TextInput v-model="form.name" class="mt-1 block w-full" />
-                        <InputError :message="form.errors.name" class="mt-1" />
-                    </div>
-                    <div>
-                        <InputLabel value="Persona de contacto" />
-                        <TextInput v-model="form.contact_name" class="mt-1 block w-full" />
-                    </div>
-                    <div>
-                        <InputLabel value="Teléfono" />
-                        <TextInput v-model="form.phone" class="mt-1 block w-full" />
-                    </div>
-                    <div>
-                        <InputLabel value="Email" />
-                        <TextInput v-model="form.email" type="email" class="mt-1 block w-full" />
-                        <InputError :message="form.errors.email" class="mt-1" />
-                    </div>
-                    <div>
-                        <InputLabel value="Dirección" />
-                        <textarea v-model="form.address" rows="2" class="mt-1 block w-full rounded-md border-stone-300 text-sm shadow-sm"></textarea>
-                    </div>
-                    <div>
-                        <InputLabel value="Notas" />
-                        <textarea v-model="form.notes" rows="2" class="mt-1 block w-full rounded-md border-stone-300 text-sm shadow-sm"></textarea>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <Checkbox v-model:checked="form.active" />
-                        <InputLabel value="Activo" />
-                    </div>
-                    <div class="flex gap-3">
-                        <Button type="submit" label="Guardar" :disabled="form.processing" />
-                        <button v-if="editingId" type="button" class="text-sm text-stone-500" @click="cancelEdit">Cancelar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+        </template>
     </AdminLayout>
 </template>

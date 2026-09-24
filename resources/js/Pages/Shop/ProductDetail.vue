@@ -74,9 +74,18 @@ const specs = [
                         {{ product.stock > 0 ? `${product.stock} disponibles` : 'Agotado' }}
                     </p>
 
-                    <div class="mt-6 flex items-center gap-3">
-                        <InputNumber v-model="form.quantity" :min="1" :max="product.stock" showButtons buttonLayout="horizontal" class="w-32" />
-                        <Button label="Agregar al carrito" :disabled="product.stock === 0 || form.processing" @click="addToCart" />
+                    <div class="mt-6 flex flex-wrap items-center gap-3">
+                        <InputNumber
+                            v-model="form.quantity"
+                            :min="1"
+                            :max="product.stock"
+                            showButtons
+                            buttonLayout="horizontal"
+                            class="shrink-0"
+                            inputClass="w-10 text-center"
+                            :inputStyle="{ width: '2.5rem' }"
+                        />
+                        <Button label="Agregar al carrito" class="flex-1 sm:flex-none" :disabled="product.stock === 0 || form.processing" @click="addToCart" />
                     </div>
                     <p v-if="form.errors.quantity" class="mt-2 text-sm text-red-600">{{ form.errors.quantity }}</p>
                 </div>

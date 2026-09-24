@@ -22,6 +22,14 @@ class UserController extends Controller
         ]);
     }
 
+    public function create(): Response
+    {
+        return Inertia::render('Admin/Users/Form', [
+            'user' => null,
+            'roles' => Role::query()->orderBy('name')->pluck('name'),
+        ]);
+    }
+
     public function store(StoreUserRequest $request): RedirectResponse
     {
         $data = $request->validated();
@@ -34,7 +42,15 @@ class UserController extends Controller
 
         $user->assignRole($data['role']);
 
-        return back()->with('success', 'Usuario creado correctamente.');
+        return redirect()->route('admin.users.index')->with('success', 'Usuario creado correctamente.');
+    }
+
+    public function edit(User $user): Response
+    {
+        return Inertia::render('Admin/Users/Form', [
+            'user' => $user->load('roles:id,name'),
+            'roles' => Role::query()->orderBy('name')->pluck('name'),
+        ]);
     }
 
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
@@ -53,7 +69,7 @@ class UserController extends Controller
         $user->save();
         $user->syncRoles([$data['role']]);
 
-        return back()->with('success', 'Usuario actualizado correctamente.');
+        return redirect()->route('admin.users.index')->with('success', 'Usuario actualizado correctamente.');
     }
 
     public function destroy(User $user): RedirectResponse

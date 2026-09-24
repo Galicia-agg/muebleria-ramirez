@@ -35,7 +35,8 @@ RUN docker-php-ext-install gd
 RUN docker-php-ext-install bcmath
 
 # Instalar extensión Redis para PHP
-RUN pecl install redis \
+RUN pecl channel-update pecl.php.net \
+    && pecl install redis \
     && docker-php-ext-enable redis
 
 # Install composer
