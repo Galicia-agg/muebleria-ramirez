@@ -15,9 +15,12 @@ const flashWarning = computed(() => page.props.flash?.warning);
 const user = computed(() => page.props.auth.user);
 
 const links = [
+    { href: 'admin.dashboard', label: 'Dashboard', icon: 'pi pi-chart-line' },
+    { href: 'admin.reports.index', label: 'Reportes', icon: 'pi pi-chart-bar' },
     { href: 'admin.products.index', label: 'Productos', icon: 'pi pi-box' },
     { href: 'admin.categories.index', label: 'Categorías', icon: 'pi pi-tags' },
     { href: 'admin.orders.index', label: 'Pedidos', icon: 'pi pi-shopping-bag' },
+    { href: 'admin.customers.index', label: 'Clientes', icon: 'pi pi-id-card' },
     { href: 'admin.payments.index', label: 'Pagos por verificar', icon: 'pi pi-credit-card' },
     { href: 'admin.stock-entries.index', label: 'Abastecimiento', icon: 'pi pi-truck' },
     { href: 'admin.suppliers.index', label: 'Proveedores', icon: 'pi pi-building' },
@@ -46,10 +49,10 @@ const logout = () => {
         />
 
         <aside
-            class="fixed inset-y-0 left-0 z-40 w-64 shrink-0 -translate-x-full border-r border-stone-200 bg-white transition-transform duration-200 lg:static lg:translate-x-0"
+            class="fixed inset-y-0 left-0 z-40 flex w-64 shrink-0 -translate-x-full flex-col border-r border-stone-200 bg-white transition-transform duration-200 lg:static lg:translate-x-0"
             :class="{ 'translate-x-0': sidebarOpen }"
         >
-            <div class="flex items-center justify-between border-b border-stone-200 px-6 py-5">
+            <div class="flex shrink-0 items-center justify-between border-b border-stone-200 px-6 py-5">
                 <div>
                     <Link :href="route('home')" class="text-lg font-bold text-primary-700">
                         Mueblería Ramírez
@@ -61,7 +64,7 @@ const logout = () => {
                 </button>
             </div>
 
-            <nav class="space-y-1 p-4">
+            <nav class="min-h-0 flex-1 space-y-1 overflow-y-auto p-4">
                 <Link
                     v-for="link in links"
                     :key="link.href"
@@ -76,7 +79,7 @@ const logout = () => {
                 </Link>
             </nav>
 
-            <div class="border-t border-stone-200 p-4">
+            <div class="shrink-0 border-t border-stone-200 p-4">
                 <Link :href="route('home')" class="text-sm text-stone-500 hover:text-primary-700">
                     ← Volver a la tienda
                 </Link>

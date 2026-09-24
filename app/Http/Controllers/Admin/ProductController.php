@@ -22,13 +22,15 @@ class ProductController extends Controller
         private readonly ProductRepositoryInterface $products,
         private readonly CategoryRepositoryInterface $categories,
         private readonly CatalogService $catalogService,
-    ) {
-    }
+    ) {}
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $filters = $request->only(['search', 'stock']);
+
         return Inertia::render('Admin/Products/Index', [
-            'products' => $this->products->paginateForAdmin(),
+            'products' => $this->products->paginateForAdmin($filters),
+            'filters' => $filters,
         ]);
     }
 

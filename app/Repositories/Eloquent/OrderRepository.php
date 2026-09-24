@@ -41,7 +41,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     public function findWithDetails(int $id): ?Order
     {
         return $this->model->newQuery()
-            ->with(['items.product', 'address', 'user', 'payment'])
+            ->with(['items.product.images', 'address', 'user', 'payment'])
             ->find($id);
     }
 }

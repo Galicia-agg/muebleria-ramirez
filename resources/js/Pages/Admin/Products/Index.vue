@@ -2,10 +2,19 @@
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Link, router } from '@inertiajs/vue3';
 import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
+import { ref } from 'vue';
 
-defineProps({
+const props = defineProps({
     products: Object,
+    filters: Object,
 });
+
+const search = ref(props.filters?.search ?? '');
+
+function applySearch() {
+    router.get(route('admin.products.index'), { search: search.value || undefined }, { preserveState: true, replace: true });
+}
 
 function destroy(product) {
     if (confirm(`¿Desactivar "${product.name}"?`)) {
@@ -26,8 +35,18 @@ function destroy(product) {
             </Link>
         </template>
 
+        <div class="mb-4 flex items-center gap-2">
+            <InputText
+                v-model="search"
+                placeholder="Buscar por nombre o SKU..."
+                class="w-full sm:w-72"
+                @keyup.enter="applySearch"
+            />
+            <Button label="Buscar" size="small" @click="applySearch" />
+        </div>
+
         <p v-if="products.data.length === 0" class="rounded-lg border border-stone-200 bg-white p-10 text-center text-stone-500">
-            No hay productos.
+            {{ filters?.search ? `Sin resultados para "${filters.search}".` : 'No hay productos.' }}
         </p>
 
         <template v-else>

@@ -8,7 +8,10 @@ use Illuminate\Database\Eloquent\Collection;
 
 interface ProductRepositoryInterface extends RepositoryInterface
 {
-    public function paginateForAdmin(int $perPage = 15): LengthAwarePaginator;
+    /**
+     * @param  array{search?: string, stock?: string}  $filters
+     */
+    public function paginateForAdmin(array $filters = [], int $perPage = 15): LengthAwarePaginator;
 
     /**
      * @param  array{category?: string, search?: string, min_price?: float, max_price?: float, sort?: string}  $filters

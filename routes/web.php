@@ -1,9 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\ReportController as AdminReportController;
 use App\Http\Controllers\Admin\StockEntryController as AdminStockEntryController;
 use App\Http\Controllers\Admin\SupplierController as AdminSupplierController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
@@ -32,8 +35,10 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return redirect()->route('admin.dashboard');
+    Route::get('/dashboard', function (Request $request) {
+        return $request->user()->isAdmin()
+            ? redirect()->route('admin.dashboard')
+            : redirect()->route('home');
     })->name('dashboard');
 
     Route::get('/checkout', [CheckoutController::class, 'create'])->name('checkout.create');
@@ -62,9 +67,8 @@ Route::middleware([
     })->name('checkout.cancelled');
 
     Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function () {
-        Route::get('/', function () {
-            return redirect()->route('admin.products.index');
-        })->name('dashboard');
+        Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/reportes', [AdminReportController::class, 'index'])->name('reports.index');
 
         Route::resource('categories', AdminCategoryController::class)
             ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
@@ -86,6 +90,10 @@ Route::middleware([
 
         Route::resource('users', AdminUserController::class)
             ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+
+        Route::resource('customers', AdminCustomerController::class)
+            ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+        Route::get('/customers/{customer}/pedidos', [AdminCustomerController::class, 'orders'])->name('customers.orders');
 
         Route::resource('suppliers', AdminSupplierController::class)
             ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);

@@ -19,13 +19,27 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
         return parent::findOrFail($id);
     }
 
-    public function paginateForAdmin(int $perPage = 15): LengthAwarePaginator
+    public function paginateForAdmin(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
-        return $this->model->newQuery()
+        $query = $this->model->newQuery()
             ->with(['category', 'images'])
-            ->orderByDesc('created_at')
-            ->paginate($perPage)
-            ->withQueryString();
+            ->orderByDesc('created_at');
+
+        if (! empty($filters['search'])) {
+            $term = $filters['search'];
+            $query->where(function ($q) use ($term) {
+                $q->where('name', 'ilike', "%{$term}%")
+                    ->orWhere('sku', 'ilike', "%{$term}%");
+            });
+        }
+
+        if (($filters['stock'] ?? null) === 'low') {
+            $query->where('active', true)->where('stock', '>', 0)->where('stock', '<=', 5);
+        } elseif (($filters['stock'] ?? null) === 'out') {
+            $query->where('active', true)->where('stock', 0);
+        }
+
+        return $query->paginate($perPage)->withQueryString();
     }
 
     public function paginateForStorefront(array $filters = [], int $perPage = 12): LengthAwarePaginator

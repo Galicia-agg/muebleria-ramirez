@@ -40,10 +40,36 @@ const remainingSlots = computed(() => props.maxImages - existingImages.value.len
 
 const newImagePreviews = computed(() => form.images.map((file) => URL.createObjectURL(file)));
 
-function onFilesSelected(event) {
-    const files = Array.from(event.target.files ?? []);
+const isDraggingFiles = ref(false);
+let dragCounter = 0;
+
+function addFiles(fileList) {
+    const files = Array.from(fileList ?? []).filter((file) => file.type.startsWith('image/'));
     form.images = [...form.images, ...files].slice(0, props.maxImages - existingImages.value.length);
+}
+
+function onFilesSelected(event) {
+    addFiles(event.target.files);
     event.target.value = '';
+}
+
+function onDragEnter() {
+    dragCounter++;
+    isDraggingFiles.value = true;
+}
+
+function onDragLeave() {
+    dragCounter--;
+    if (dragCounter <= 0) {
+        dragCounter = 0;
+        isDraggingFiles.value = false;
+    }
+}
+
+function onDrop(event) {
+    dragCounter = 0;
+    isDraggingFiles.value = false;
+    addFiles(event.dataTransfer?.files);
 }
 
 function removeNewImage(index) {
@@ -179,9 +205,9 @@ function submit() {
                 <div>
                     <InputLabel :value="`Fotografías (máximo ${maxImages})`" />
 
-                    <div class="mt-2 flex flex-wrap gap-3">
-                        <div v-for="image in existingImages" :key="image.id" class="relative h-24 w-24">
-                            <img :src="image.url" class="h-full w-full rounded object-cover" />
+                    <div v-if="existingImages.length || newImagePreviews.length" class="mt-2 flex flex-wrap gap-3">
+                        <div v-for="image in existingImages" :key="image.id" class="relative h-24 w-24 overflow-hidden rounded border border-stone-200 bg-stone-100">
+                            <img :src="image.url" class="h-full w-full object-contain" />
                             <button
                                 type="button"
                                 class="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-xs text-white"
@@ -191,8 +217,8 @@ function submit() {
                             </button>
                         </div>
 
-                        <div v-for="(preview, index) in newImagePreviews" :key="preview" class="relative h-24 w-24">
-                            <img :src="preview" class="h-full w-full rounded object-cover" />
+                        <div v-for="(preview, index) in newImagePreviews" :key="preview" class="relative h-24 w-24 overflow-hidden rounded border border-stone-200 bg-stone-100">
+                            <img :src="preview" class="h-full w-full object-contain" />
                             <button
                                 type="button"
                                 class="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-xs text-white"
@@ -203,14 +229,22 @@ function submit() {
                         </div>
                     </div>
 
-                    <input
+                    <label
                         v-if="remainingSlots > 0"
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        class="mt-3 block text-sm"
-                        @change="onFilesSelected"
-                    />
+                        class="mt-3 flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-4 py-6 text-center transition"
+                        :class="isDraggingFiles ? 'border-accent-500 bg-accent-50' : 'border-stone-300 hover:border-stone-400'"
+                        @dragover.prevent
+                        @dragenter.prevent="onDragEnter"
+                        @dragleave.prevent="onDragLeave"
+                        @drop.prevent="onDrop"
+                    >
+                        <i class="pi pi-cloud-upload text-2xl text-stone-400" />
+                        <p class="mt-2 text-sm text-stone-600">
+                            <span class="font-medium text-primary-700">Elige archivos</span> o arrástralos aquí
+                        </p>
+                        <p class="mt-1 text-xs text-stone-400">Puedes agregar {{ remainingSlots }} foto{{ remainingSlots === 1 ? '' : 's' }} más</p>
+                        <input type="file" accept="image/*" multiple class="hidden" @change="onFilesSelected" />
+                    </label>
                     <p v-else class="mt-3 text-sm text-stone-500">Alcanzaste el máximo de {{ maxImages }} fotografías.</p>
                     <InputError :message="form.errors.images" class="mt-2" />
                 </div>

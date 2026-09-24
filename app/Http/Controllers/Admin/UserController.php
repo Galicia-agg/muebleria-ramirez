@@ -17,8 +17,12 @@ class UserController extends Controller
     public function index(): Response
     {
         return Inertia::render('Admin/Users/Index', [
-            'users' => User::query()->with('roles:id,name')->orderBy('name')->get(['id', 'name', 'email']),
-            'roles' => Role::query()->orderBy('name')->pluck('name'),
+            'users' => User::query()
+                ->whereDoesntHave('roles', fn ($q) => $q->where('name', 'cliente'))
+                ->with('roles:id,name')
+                ->orderBy('name')
+                ->get(['id', 'name', 'email']),
+            'roles' => Role::query()->where('name', '!=', 'cliente')->orderBy('name')->pluck('name'),
         ]);
     }
 
@@ -26,7 +30,7 @@ class UserController extends Controller
     {
         return Inertia::render('Admin/Users/Form', [
             'user' => null,
-            'roles' => Role::query()->orderBy('name')->pluck('name'),
+            'roles' => Role::query()->where('name', '!=', 'cliente')->orderBy('name')->pluck('name'),
         ]);
     }
 
@@ -49,7 +53,7 @@ class UserController extends Controller
     {
         return Inertia::render('Admin/Users/Form', [
             'user' => $user->load('roles:id,name'),
-            'roles' => Role::query()->orderBy('name')->pluck('name'),
+            'roles' => Role::query()->where('name', '!=', 'cliente')->orderBy('name')->pluck('name'),
         ]);
     }
 
