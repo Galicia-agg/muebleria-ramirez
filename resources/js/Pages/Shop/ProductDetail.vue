@@ -2,6 +2,7 @@
 import ShopLayout from '@/Layouts/ShopLayout.vue';
 import { useForm } from '@inertiajs/vue3';
 import Button from 'primevue/button';
+import Image from 'primevue/image';
 import InputNumber from 'primevue/inputnumber';
 import { ref } from 'vue';
 
@@ -36,7 +37,14 @@ const specs = [
             <div class="grid grid-cols-1 gap-10 lg:grid-cols-2">
                 <div>
                     <div class="aspect-square overflow-hidden rounded-lg border border-stone-200 bg-stone-100">
-                        <img v-if="activeImage" :src="activeImage" :alt="product.name" class="h-full w-full object-cover" />
+                        <Image
+                            v-if="activeImage"
+                            :src="activeImage"
+                            :alt="product.name"
+                            preview
+                            class="block h-full w-full"
+                            imageClass="h-full w-full object-cover"
+                        />
                         <div v-else class="flex h-full items-center justify-center text-stone-400">Sin imagen</div>
                     </div>
                     <div class="mt-3 flex gap-2 overflow-x-auto">

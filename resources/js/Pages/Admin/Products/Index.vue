@@ -2,6 +2,7 @@
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Link, router } from '@inertiajs/vue3';
 import Button from 'primevue/button';
+import Image from 'primevue/image';
 import InputText from 'primevue/inputtext';
 import { ref } from 'vue';
 
@@ -54,10 +55,13 @@ function destroy(product) {
             <ul class="space-y-3 sm:hidden">
                 <li v-for="product in products.data" :key="product.id" class="rounded-lg border border-stone-200 bg-white p-4">
                     <div class="flex items-start gap-3">
-                        <img
+                        <Image
                             v-if="product.images?.[0]"
                             :src="product.images[0].url"
-                            class="h-14 w-14 shrink-0 rounded object-cover"
+                            :alt="product.name"
+                            preview
+                            class="block h-14 w-14 shrink-0"
+                            imageClass="h-14 w-14 rounded object-cover"
                         />
                         <div v-else class="flex h-14 w-14 shrink-0 items-center justify-center rounded bg-stone-100 text-stone-400">
                             <i class="pi pi-image" />
@@ -107,10 +111,13 @@ function destroy(product) {
                     <tbody class="divide-y divide-stone-100 text-sm text-stone-700">
                         <tr v-for="product in products.data" :key="product.id">
                             <td class="px-6 py-3">
-                                <img
+                                <Image
                                     v-if="product.images?.[0]"
                                     :src="product.images[0].url"
-                                    class="h-10 w-10 rounded object-cover"
+                                    :alt="product.name"
+                                    preview
+                                    class="block h-10 w-10"
+                                    imageClass="h-10 w-10 rounded object-cover"
                                 />
                             </td>
                             <td class="px-6 py-3">{{ product.sku }}</td>

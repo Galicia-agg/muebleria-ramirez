@@ -1,0 +1,46 @@
+Mueblería Ramírez — Arreglo: fotos de producto dan 403 Forbidden en producción
+================================================================================
+
+CAUSA
+-----
+El enlace simbólico public/storage -> storage/app/public no existe (o se
+rompió), y el usuario "www" dentro del contenedor de la app no tiene permiso
+para crearlo ni para cambiar dueños/permisos en esas carpetas. Por eso nginx
+responde 403 al pedir cualquier archivo bajo /storage/...
+
+SOLUCIÓN (correr por SSH en el servidor de producción)
+--------------------------------------------------------
+
+1) Crear el enlace simbólico como root (evita el problema de permisos):
+
+   docker exec -u root muebleria-ramirez php artisan storage:link
+
+2) Verificar que se creó correctamente (debe mostrar una flecha "->"):
+
+   docker exec muebleria-ramirez-server ls -la /var/www/public/storage
+
+3) Asegurar que los permisos y el dueño queden correctos:
+
+   docker exec -u root muebleria-ramirez chown -R www:www /var/www/storage/app/public /var/www/public/storage
+   docker exec -u root muebleria-ramirez chmod -R 755 /var/www/storage/app/public
+
+4) Probar la imagen en el navegador (o recargar la página de edición del
+   producto). Si ya no da 403, quedó resuelto.
+
+SI TODAVÍA DA 403 DESPUÉS DE ESTO
+----------------------------------
+El problema ya no sería el symlink, sino algo externo interceptando la ruta
+(firewall, WAF, ModSecurity/CSF, etc.). Diagnosticar con:
+
+   curl -i http://187.127.8.67:8070/storage/products/<archivo>.jpg | head -20
+
+Esto muestra si la respuesta 403 viene de nginx, de Laravel o de algo externo.
+Revisar también el log de nginx del contenedor:
+
+   docker logs muebleria-ramirez-server --tail 50 | grep -i "403"
+
+NOTA PARA FUTUROS DESPLIEGUES
+-------------------------------
+Cada vez que se clone/despliegue el proyecto en un servidor nuevo, correr el
+paso 1 (storage:link) como parte del proceso de deploy — no viene creado por
+defecto y Laravel no lo crea solo.

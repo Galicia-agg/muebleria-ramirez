@@ -6,7 +6,6 @@ use App\Exceptions\InsufficientStockException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Shop\CheckoutRequest;
 use App\Models\Address;
-use App\Models\Cart;
 use App\Repositories\Contracts\AddressRepositoryInterface;
 use App\Services\CartService;
 use App\Services\OrderService;
@@ -18,14 +17,14 @@ use InvalidArgumentException;
 
 class CheckoutController extends Controller
 {
-    private const SHIPPING_COST_DOMICILIO = 35.00;
+    // Envío nacional incluido en el precio del producto: no se cobra por separado.
+    private const SHIPPING_COST = 0.00;
 
     public function __construct(
         private readonly CartService $cartService,
         private readonly OrderService $orderService,
         private readonly AddressRepositoryInterface $addresses,
-    ) {
-    }
+    ) {}
 
     public function create(Request $request): Response
     {
@@ -34,7 +33,6 @@ class CheckoutController extends Controller
         return Inertia::render('Shop/Checkout', [
             'cart' => $cart->load('items.product'),
             'addresses' => $this->addresses->forUser($request->user()->id),
-            'shippingCost' => self::SHIPPING_COST_DOMICILIO,
         ]);
     }
 
@@ -47,8 +45,6 @@ class CheckoutController extends Controller
             ? Address::query()->where('user_id', $user->id)->find($request->input('address_id'))
             : null;
 
-        $shippingCost = $request->input('delivery_method') === 'domicilio' ? self::SHIPPING_COST_DOMICILIO : 0;
-
         try {
             $order = $this->orderService->checkout(
                 cart: $cart,
@@ -56,7 +52,7 @@ class CheckoutController extends Controller
                 address: $address,
                 deliveryMethod: $request->input('delivery_method'),
                 paymentMethod: $request->input('payment_method'),
-                shippingCost: $shippingCost,
+                shippingCost: self::SHIPPING_COST,
                 paymentProof: $request->file('payment_proof'),
             );
         } catch (InsufficientStockException|InvalidArgumentException $e) {

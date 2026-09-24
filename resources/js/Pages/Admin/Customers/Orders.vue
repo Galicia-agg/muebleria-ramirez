@@ -41,8 +41,8 @@ const statusStyles = {
             </Link>
 
             <div class="mb-4 rounded-lg border border-stone-200 bg-white p-4">
-                <p class="font-medium text-stone-900">{{ customer.name }}</p>
-                <p class="text-sm text-stone-500">{{ customer.email }}</p>
+                <p class="font-medium text-stone-900 break-words">{{ customer.name }}</p>
+                <p class="text-sm text-stone-500 break-words">{{ customer.email }}</p>
             </div>
 
             <p v-if="orders.data.length === 0" class="rounded-lg border border-stone-200 bg-white p-10 text-center text-stone-500">

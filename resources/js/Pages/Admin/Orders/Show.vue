@@ -3,6 +3,7 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import { useForm } from '@inertiajs/vue3';
 import Button from 'primevue/button';
+import Image from 'primevue/image';
 import { computed } from 'vue';
 
 const props = defineProps({
@@ -48,11 +49,13 @@ function updateStatus() {
                 <h2 class="mb-4 font-semibold text-stone-800">Productos</h2>
                 <div class="divide-y divide-stone-100">
                     <div v-for="item in order.items" :key="item.id" class="flex items-center gap-3 py-3">
-                        <img
+                        <Image
                             v-if="item.product?.images?.[0]"
                             :src="item.product.images[0].url"
                             :alt="item.product_name"
-                            class="h-14 w-14 shrink-0 rounded border border-stone-200 object-cover"
+                            preview
+                            class="block h-14 w-14 shrink-0"
+                            imageClass="h-14 w-14 rounded border border-stone-200 object-cover"
                         />
                         <div v-else class="flex h-14 w-14 shrink-0 items-center justify-center rounded border border-stone-200 bg-stone-100 text-stone-400">
                             <i class="pi pi-image" />
@@ -89,8 +92,8 @@ function updateStatus() {
 
             <div class="rounded-lg border border-stone-200 bg-white p-6">
                 <h2 class="mb-4 font-semibold text-stone-800">Cliente</h2>
-                <p class="text-sm">{{ order.user?.name }}</p>
-                <p class="text-sm text-stone-500">{{ order.user?.email }}</p>
+                <p class="text-sm break-words">{{ order.user?.name }}</p>
+                <p class="text-sm text-stone-500 break-words">{{ order.user?.email }}</p>
 
                 <h2 class="mb-2 mt-6 font-semibold text-stone-800">Estado del pedido</h2>
 

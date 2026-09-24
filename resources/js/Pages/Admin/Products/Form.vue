@@ -6,6 +6,7 @@ import TextInput from '@/Components/TextInput.vue';
 import Checkbox from '@/Components/Checkbox.vue';
 import { Link, router, useForm } from '@inertiajs/vue3';
 import Button from 'primevue/button';
+import Image from 'primevue/image';
 import { computed, ref } from 'vue';
 
 const props = defineProps({
@@ -207,10 +208,10 @@ function submit() {
 
                     <div v-if="existingImages.length || newImagePreviews.length" class="mt-2 flex flex-wrap gap-3">
                         <div v-for="image in existingImages" :key="image.id" class="relative h-24 w-24 overflow-hidden rounded border border-stone-200 bg-stone-100">
-                            <img :src="image.url" class="h-full w-full object-contain" />
+                            <Image :src="image.url" preview class="block h-full w-full" imageClass="h-full w-full object-contain" />
                             <button
                                 type="button"
-                                class="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-xs text-white"
+                                class="absolute -right-2 -top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-xs text-white"
                                 @click="removeExistingImage(image)"
                             >
                                 ×
@@ -218,10 +219,10 @@ function submit() {
                         </div>
 
                         <div v-for="(preview, index) in newImagePreviews" :key="preview" class="relative h-24 w-24 overflow-hidden rounded border border-stone-200 bg-stone-100">
-                            <img :src="preview" class="h-full w-full object-contain" />
+                            <Image :src="preview" preview class="block h-full w-full" imageClass="h-full w-full object-contain" />
                             <button
                                 type="button"
-                                class="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-xs text-white"
+                                class="absolute -right-2 -top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-xs text-white"
                                 @click="removeNewImage(index)"
                             >
                                 ×

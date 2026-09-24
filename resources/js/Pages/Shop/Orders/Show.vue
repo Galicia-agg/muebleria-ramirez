@@ -45,19 +45,9 @@ const paymentStatusLabels = {
                         <span class="font-medium">Q {{ item.subtotal }}</span>
                     </div>
                 </div>
-                <div class="mt-4 space-y-1 border-t border-stone-200 pt-4 text-sm">
-                    <div class="flex justify-between">
-                        <span>Subtotal</span>
-                        <span>Q {{ order.subtotal }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span>Envío</span>
-                        <span>Q {{ order.shipping_cost }}</span>
-                    </div>
-                    <div class="flex justify-between text-base font-bold text-stone-900">
-                        <span>Total</span>
-                        <span>Q {{ order.total }}</span>
-                    </div>
+                <div class="mt-4 flex justify-between border-t border-stone-200 pt-4 text-base font-bold text-stone-900">
+                    <span>Total</span>
+                    <span>Q {{ order.total }}</span>
                 </div>
             </div>
 

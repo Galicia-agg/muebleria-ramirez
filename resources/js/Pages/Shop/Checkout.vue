@@ -11,7 +11,6 @@ import { computed, ref } from 'vue';
 const props = defineProps({
     cart: Object,
     addresses: Array,
-    shippingCost: Number,
 });
 
 const subtotal = computed(() =>
@@ -24,10 +23,6 @@ const form = useForm({
     payment_method: 'transferencia',
     payment_proof: null,
 });
-
-const total = computed(() =>
-    subtotal.value + (form.delivery_method === 'domicilio' ? props.shippingCost : 0),
-);
 
 const proofInput = ref(null);
 
@@ -51,11 +46,11 @@ function submit() {
                     <div class="space-y-2">
                         <label class="flex items-center gap-2">
                             <RadioButton v-model="form.delivery_method" value="domicilio" />
-                            Entrega a domicilio (Q {{ shippingCost.toFixed(2) }})
+                            Entrega a domicilio (a nivel nacional)
                         </label>
                         <label class="flex items-center gap-2">
                             <RadioButton v-model="form.delivery_method" value="recoger_tienda" />
-                            Recoger en tienda (gratis)
+                            Recoger en tienda
                         </label>
                     </div>
 
@@ -114,18 +109,11 @@ function submit() {
                 </section>
 
                 <section class="rounded-lg border border-stone-200 bg-white p-6">
-                    <div class="flex justify-between text-sm text-stone-600">
-                        <span>Subtotal</span>
+                    <div class="flex justify-between text-lg font-bold text-stone-900">
+                        <span>Total</span>
                         <span>Q {{ subtotal.toFixed(2) }}</span>
                     </div>
-                    <div class="flex justify-between text-sm text-stone-600">
-                        <span>Envío</span>
-                        <span>Q {{ (form.delivery_method === 'domicilio' ? shippingCost : 0).toFixed(2) }}</span>
-                    </div>
-                    <div class="mt-2 flex justify-between border-t border-stone-200 pt-2 text-lg font-bold text-stone-900">
-                        <span>Total</span>
-                        <span>Q {{ total.toFixed(2) }}</span>
-                    </div>
+                    <p class="mt-1 text-xs text-stone-500">Envío incluido.</p>
                 </section>
 
                 <InputError :message="form.errors.cart" />

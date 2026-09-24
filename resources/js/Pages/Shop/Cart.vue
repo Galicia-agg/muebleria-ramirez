@@ -2,6 +2,7 @@
 import ShopLayout from '@/Layouts/ShopLayout.vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import Button from 'primevue/button';
+import Image from 'primevue/image';
 import InputNumber from 'primevue/inputnumber';
 import { computed } from 'vue';
 
@@ -43,11 +44,13 @@ function removeItem(item) {
                     :key="item.id"
                     class="flex flex-wrap items-center gap-4 rounded-lg border border-stone-200 bg-white p-4"
                 >
-                    <img
+                    <Image
                         v-if="item.product.images?.[0]"
                         :src="item.product.images[0].url"
                         :alt="item.product.name"
-                        class="h-16 w-16 shrink-0 rounded object-cover"
+                        preview
+                        class="block h-16 w-16 shrink-0"
+                        imageClass="h-16 w-16 rounded object-cover"
                     />
                     <div class="min-w-[140px] flex-1">
                         <p class="font-medium text-stone-800">{{ item.product.name }}</p>
